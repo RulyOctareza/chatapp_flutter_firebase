@@ -1,3 +1,4 @@
+import 'package:chatapp_with_firebase/components/custom_chat_bubble.dart';
 import 'package:chatapp_with_firebase/components/custom_text_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -81,25 +82,50 @@ class ChatPage extends StatelessWidget {
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
+    bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
 
+    var aligment = isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
 
-
-    return Text(data['message']);
+    return Container(
+      alignment: aligment,
+      child: Column(
+        crossAxisAlignment:
+            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          CustomChatBubble(
+            message: data['message'],
+            isCurrentUser: isCurrentUser,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildUserInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: CustomTextField(
-            controller: _messageController,
-            labelText: 'Type a message ..',
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 50.0, left: Checkbox.width),
+      child: Row(
+        children: [
+          Expanded(
+            child: CustomTextField(
+              controller: _messageController,
+              labelText: 'Type a message ..',
+            ),
           ),
-        ),
 
-        IconButton(icon: Icon(Icons.send), onPressed: sendMessage),
-      ],
+          Container(
+            margin: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.arrow_upward),
+              onPressed: sendMessage,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
