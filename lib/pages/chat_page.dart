@@ -30,7 +30,6 @@ class _ChatPageState extends State<ChatPage> {
         _messageController.clear();
       }
     }
-    scrollDown();
   }
 
   Future<String?> _getReceiverID() async {

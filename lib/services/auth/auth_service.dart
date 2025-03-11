@@ -1,8 +1,9 @@
 import 'dart:developer';
 
+import 'package:chatapp_with_firebase/services/notifications/notifications_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:flutter/widgets.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -20,6 +21,8 @@ class AuthService {
         password: password,
       );
 
+      NotificationsService().setupTokenListeners();
+
       // save user as doc
 
       _firestore.collection('users').doc(userCredential.user!.uid).set({
@@ -32,6 +35,7 @@ class AuthService {
       log("Sign-in error: ${e.toString()}");
       return null;
     }
+    // save device token
   }
 
   // Sign up method
@@ -47,6 +51,7 @@ class AuthService {
         'uid': userCredential.user!.uid,
         'email': email,
       });
+      NotificationsService().setupTokenListeners();
 
       return userCredential.user;
     } catch (e) {
@@ -59,6 +64,11 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
+      String? userId = _auth.currentUser?.uid;
+
+      if (userId != null) {
+        await NotificationsService().clearTokenOnLogout(userId);
+      }
     } catch (e) {
       log("Sign-out error: ${e.toString()}");
     }
@@ -84,6 +94,4 @@ class AuthService {
         return 'An unexpected error occurred';
     }
   }
-
-  
 }
