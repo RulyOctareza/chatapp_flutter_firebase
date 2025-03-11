@@ -6,12 +6,20 @@ import 'package:flutter/material.dart';
 import '../services/auth/auth_service.dart';
 import '../services/chat/chat_service.dart';
 
-class ChatPage extends StatelessWidget {
-  ChatPage({super.key, required this.receiverEmail});
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key, required this.receiverEmail});
 
   final String receiverEmail;
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
   final ChatService _chatService = ChatService();
+
   final AuthService _authService = AuthService();
+
   final TextEditingController _messageController = TextEditingController();
 
   Future<void> sendMessage() async {
@@ -22,16 +30,47 @@ class ChatPage extends StatelessWidget {
         _messageController.clear();
       }
     }
+    scrollDown();
   }
 
   Future<String?> _getReceiverID() async {
-    return await _chatService.getUserIDByEmail(receiverEmail);
+    return await _chatService.getUserIDByEmail(widget.receiverEmail);
+  }
+
+  FocusNode myFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    myFocusNode.addListener(() {
+      if (myFocusNode.hasFocus) {
+        Future.delayed(Duration(milliseconds: 500), () => scrollDown());
+      }
+    });
+
+    Future.delayed(Duration(milliseconds: 500), () => scrollDown());
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    myFocusNode.dispose();
+    super.dispose();
+  }
+
+  final ScrollController _scrollController = ScrollController();
+  void scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: Duration(seconds: 1),
+      curve: Curves.fastLinearToSlowEaseIn,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(receiverEmail)),
+      appBar: AppBar(title: Text(widget.receiverEmail)),
       body: Column(
         children: [Expanded(child: _buildMessageList()), _buildUserInput()],
       ),
@@ -68,6 +107,7 @@ class ChatPage extends StatelessWidget {
             }
 
             return ListView(
+              controller: _scrollController,
               children:
                   snapshot.data!.docs
                       .map<Widget>((doc) => _buildMessageItem(doc))
@@ -108,6 +148,8 @@ class ChatPage extends StatelessWidget {
         children: [
           Expanded(
             child: CustomTextField(
+              focusNode: myFocusNode,
+
               controller: _messageController,
               labelText: 'Type a message ..',
             ),

@@ -2,6 +2,7 @@
 
 import 'package:chatapp_with_firebase/services/auth/auth_service.dart';
 import 'package:chatapp_with_firebase/extensions/extensions.dart';
+import 'package:firebase_auth_platform_interface/src/firebase_auth_exception.dart';
 import 'package:flutter/material.dart';
 
 import '../components/custom_text_field.dart';
@@ -25,7 +26,14 @@ class LoginPage extends StatelessWidget {
     } catch (e) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(title: Text(e.toString())),
+        builder:
+            (context) => AlertDialog(
+              title: Text(
+                authService.getErrorMessage(
+                  e.toString() as FirebaseAuthException,
+                ),
+              ),
+            ),
       );
     }
   }

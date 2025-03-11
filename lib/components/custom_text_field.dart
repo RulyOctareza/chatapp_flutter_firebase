@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -5,6 +6,7 @@ class CustomTextField extends StatefulWidget {
   final String labelText;
   final IconData? prefixIcon;
   final bool isPassword;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -12,6 +14,7 @@ class CustomTextField extends StatefulWidget {
     required this.labelText,
     this.prefixIcon,
     this.isPassword = false,
+    this.focusNode,
   });
 
   @override
