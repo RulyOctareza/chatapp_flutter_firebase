@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/preview/hero.png" alt="Chat App Firebase — ilustrasi aplikasi chat real-time" width="100%">
+  <img src="docs/preview/hero.svg" alt="Chat App Firebase — ilustrasi aplikasi chat real-time" width="100%">
 </p>
 
 <h1 align="center">Chat App — Flutter + Firebase</h1>
